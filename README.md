@@ -1,6 +1,5 @@
 # NLP based Text Generator using RNN LSTM
 
-<div style="text-align: right">Uday Kiran Dasari</div>
 
 ## Objective
 
@@ -20,8 +19,6 @@ The goal of this project is to develop a Telugu language chatbot leveraging deep
 - [Future Work](#future-work)
 - [Dependencies](#dependencies)
 - [How to Run](#how-to-run)
-- [Contributors](#contributors)
-- [References](#references)
 
 ## Project Overview
 
@@ -93,7 +90,3 @@ However, it is important to note that the model's performance is constrained by 
 1. Clone the repository.
 2. Install the required dependencies and download the required files.
 3. Run the Jupyter notebook `NLP Telugu.ipynb`.
-
-## Contributors
-
-- Uday Kiran Dasari
