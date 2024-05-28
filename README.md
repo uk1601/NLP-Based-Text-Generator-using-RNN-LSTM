@@ -1,4 +1,3 @@
-
 # NLP based Text Generator using RNN LSTM
 
 <div style="text-align: right">Uday Kiran Dasari</div>
@@ -14,8 +13,8 @@ The goal of this project is to develop a Telugu language chatbot leveraging deep
 - [Dataset](#dataset)
 - [Preprocessing](#preprocessing)
 - [Tokenizer Initialization, Sequence Creation, and Padding](#tokenizer-initialization-sequence-creation-and-padding)
-- [Model Training](#model-training)
-- [Model Evaluation and Saving](#model-evaluation-and-saving)
+- [Loading the embedding and creation of the embedding matrix](#Loading-the-embedding-and-creation-of-the-embedding-matrix)
+- [Model Creation, Training, and Saving](#Model-Creation,-Training,-and-Saving)
 - [Generating Output](#generating-output)
 - [Conclusion](#conclusion)
 - [Future Work](#future-work)
@@ -31,13 +30,13 @@ This project involves several key steps to achieve the goal of creating a functi
 1. **Text Preprocessing**
 2. **Tokenizer Initialization, Sequence Creation, and Padding**
 3. **Preparing Data for Model Training**
-4. **Loading the Embeddings**
+4. **Loading the embedding and creation of the embedding matrix**
 5. **Model Creation, Training, and Saving**
 6. **Loading the Saved Model and Generating Output**
 
 ## Dataset
 
-The dataset used in this project consists of Telugu books text data stored in a CSV file. The relevant text data is extracted and preprocessed to create a clean and usable corpus for training the model.
+The dataset used in this project consists of Telugu books text data stored in a CSV file [Data](https://www.kaggle.com/datasets/sudalairajkumar/telugu-nlp). The relevant text data is extracted and preprocessed to create a clean and usable corpus for training the model.
 
 ## Preprocessing
 
@@ -46,27 +45,6 @@ The preprocessing steps involve:
 - Merging text data from all rows into a single corpus.
 - Splitting the corpus into sentences for further processing.
 
-```python
-import re
-import pandas as pd
-
-def preprocess_text(text):
-    text = text.lower()
-    text = re.sub(r"[^a-zA-Z0-9\s]", "", text)
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
-
-def read_and_preprocess_csv(file_path, column_index):
-    data = pd.read_csv(file_path)
-    corpus = ' '.join(data.iloc[:, column_index].astype(str).tolist())
-    preprocessed_corpus = preprocess_text(corpus)
-    return preprocessed_corpus
-
-file_path = './Data/telugu_books.csv'
-column_index = 1
-corpus = read_and_preprocess_csv(file_path, column_index)
-print(corpus[:1000])
-```
 
 ## Tokenizer Initialization, Sequence Creation, and Padding
 
@@ -74,70 +52,33 @@ print(corpus[:1000])
 - Created sequences of fixed length for input into the model.
 - Applied padding to ensure uniform sequence lengths, making the data suitable for model training.
 
-```python
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+## Loading the embedding and creation of the embedding matrix
 
-corpus = corpus[:500000]
-training_data = [sentence.strip() for sentence in corpus.split('.') if sentence.strip()]
+- FastText Telugu embeddings are used. [Telugu Embeddings](https://fasttext.cc/docs/en/crawl-vectors.html)
+- Loaded pre-trained word embeddings to represent the words in a dense vector space.
+- Integrated these embeddings into the model to enhance its understanding of the language context.
 
-tokenizer = Tokenizer()
-tokenizer.fit_on_texts(training_data)
-sequences = tokenizer.texts_to_sequences(training_data)
-vocab_size = len(tokenizer.word_index) + 1
+## Model Creation, Training, and Saving
 
-max_sequence_length = 50
-padded_sequences = pad_sequences(sequences, maxlen=max_sequence_length)
-```
-
-## Model Training
-
-Designed and built RNN models with LSTM cells using TensorFlow. The models were trained on the prepared data, adjusting hyperparameters for optimal performance.
-
-```python
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding, LSTM, Dense
-
-model = Sequential([
-    Embedding(input_dim=vocab_size, output_dim=100, input_length=max_sequence_length),
-    LSTM(100, return_sequences=True),
-    LSTM(100),
-    Dense(vocab_size, activation='softmax')
-])
-
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(padded_sequences, epochs=20, validation_split=0.2)
-```
-
-## Model Evaluation and Saving
-
-Evaluated the trained model's performance and saved the model for future use.
-
-```python
-model.save('telugu_chatbot_model.h5')
-```
+- Designed and built 2 RNN models with LSTM cells using TensorFlow.
+- Trained the model on the prepared data, adjusting hyperparameters for optimal performance.
+- Saved the trained model for future use.
 
 ## Generating Output
 
-Loaded the saved model to generate responses using a given prompt and produced coherent, contextually appropriate output.
-
-```python
-from tensorflow.keras.models import load_model
-
-model = load_model('telugu_chatbot_model.h5')
-
-def generate_text(model, tokenizer, input_text, max_sequence_length):
-    # Implementation for generating text based on input_text
-    pass
-```
+- Loaded the saved model for generating responses using two approaches **Deterministic and Probabilistic**
+- Provided a prompt to the model and generated coherent, contextually appropriate output.
 
 ## Conclusion
 
-The project successfully developed a Telugu language chatbot capable of generating coherent text using RNN with LSTM units. The chatbot leverages deep learning to enhance NLP capabilities in the Telugu language.
+This project successfully demonstrates the creation of a Telugu language chatbot using RNNs with LSTM units. By leveraging pre-trained word embeddings and training two different LSTM architectures, the model is capable of generating coherent Telugu text. The generated text highlights the model's ability to understand and predict language structures effectively, paving the way for advanced NLP applications in Telugu.
+
+However, it is important to note that the model's performance is constrained by the limited data and type of data it was trained on. As a result, the range of emotions and vocabulary is also limited. Consequently, the model's predictions may sometimes loop within the restricted vocabulary provided. Expanding the dataset with more diverse and extensive text could further enhance the model's capabilities and robustness.
 
 ## Future Work
 
-- Improve the model's accuracy and efficiency.
+- Try different model architectures.
+- Improve the model's accuracy and efficiency by incorporating techniques such as Dropout layers, regularization layers, Callbacks, and optimizers.
 - Expand the dataset for more diverse training data.
 - Integrate the chatbot into a user-friendly application.
 
@@ -150,15 +91,9 @@ The project successfully developed a Telugu language chatbot capable of generati
 ## How to Run
 
 1. Clone the repository.
-2. Install the required dependencies.
+2. Install the required dependencies and download the required files.
 3. Run the Jupyter notebook `NLP Telugu.ipynb`.
 
 ## Contributors
 
 - Uday Kiran Dasari
-
-## References
-
-- [TensorFlow Documentation](https://www.tensorflow.org/)
-- [Pandas Documentation](https://pandas.pydata.org/)
-- [NumPy Documentation](https://numpy.org/)
